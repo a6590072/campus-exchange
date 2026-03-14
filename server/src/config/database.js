@@ -166,36 +166,35 @@ const connectionConfig = process.env.DATABASE_URL
 let pool = null;
 
 // 尝试连接 PostgreSQL
-try {
-  pool = new Pool({
-    ...connectionConfig,
-    min: parseInt(process.env.DB_POOL_MIN) || 2,
-    max: parseInt(process.env.DB_POOL_MAX) || 10,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
-  });
+async function initPostgres() {
+  try {
+    pool = new Pool({
+      ...connectionConfig,
+      min: parseInt(process.env.DB_POOL_MIN) || 2,
+      max: parseInt(process.env.DB_POOL_MAX) || 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    });
 
-  pool.on('error', (err) => {
-    console.error('PostgreSQL error:', err);
-    useMemoryDB = true;
-    initMemoryDB();
-  });
-  
-  // 测试连接
-  pool.query('SELECT NOW()', (err) => {
-    if (err) {
-      console.log('⚠️ PostgreSQL 连接失败，切换到内存数据库');
+    pool.on('error', (err) => {
+      console.error('PostgreSQL error:', err);
       useMemoryDB = true;
       initMemoryDB();
-    } else {
-      console.log('✅ PostgreSQL 连接成功');
-    }
-  });
-} catch (error) {
-  console.log('⚠️ PostgreSQL 初始化失败，切换到内存数据库');
-  useMemoryDB = true;
-  initMemoryDB();
+    });
+    
+    // 测试连接
+    await pool.query('SELECT NOW()');
+    console.log('✅ PostgreSQL 连接成功');
+  } catch (error) {
+    console.log('⚠️ PostgreSQL 连接失败，切换到内存数据库:', error.message);
+    useMemoryDB = true;
+    pool = null;
+    initMemoryDB();
+  }
 }
+
+// 立即执行初始化
+initPostgres();
 
 const query = async (text, params) => {
   // 如果使用内存数据库
