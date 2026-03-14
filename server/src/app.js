@@ -8,8 +8,10 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
 
 const routes = require('./routes');
+const { query } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -104,8 +106,46 @@ app.use((err, req, res, next) => {
   });
 });
 
+// 初始化数据库
+async function initDatabase() {
+  try {
+    console.log('🔄 检查数据库初始化...');
+    
+    // 检查 items 表是否存在
+    const checkResult = await query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'items'
+      );
+    `);
+    
+    if (!checkResult.rows[0].exists) {
+      console.log('📊 数据库表不存在，开始初始化...');
+      
+      // 读取并执行 SQL 文件
+      const sqlPath = path.join(__dirname, 'database/schema.sql');
+      if (fs.existsSync(sqlPath)) {
+        const sql = fs.readFileSync(sqlPath, 'utf8');
+        await query(sql);
+        console.log('✅ 数据库初始化完成！');
+      } else {
+        console.log('⚠️ schema.sql 文件不存在，跳过初始化');
+      }
+    } else {
+      console.log('✅ 数据库已初始化');
+    }
+  } catch (error) {
+    console.error('❌ 数据库初始化失败:', error.message);
+    // 不阻止服务器启动
+  }
+}
+
 // 启动服务器 - 监听所有网络接口
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', async () => {
+  // 初始化数据库
+  await initDatabase();
+  
   console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║                                                        ║
