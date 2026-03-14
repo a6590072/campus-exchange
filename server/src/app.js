@@ -117,10 +117,13 @@ async function initDatabase() {
         SELECT FROM information_schema.tables 
         WHERE table_schema = 'public' 
         AND table_name = 'items'
-      );
+      ) as exists;
     `);
     
-    if (!checkResult.rows[0].exists) {
+    // 安全地检查 exists 属性
+    const tableExists = checkResult && checkResult.rows && checkResult.rows[0] && checkResult.rows[0].exists;
+    
+    if (!tableExists) {
       console.log('📊 数据库表不存在，开始初始化...');
       
       // 读取并执行 SQL 文件
