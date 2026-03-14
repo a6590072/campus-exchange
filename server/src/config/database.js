@@ -271,10 +271,26 @@ const getMemoryDB = () => {
   return memoryDB;
 };
 
+// 检查 PostgreSQL 是否就绪
+const isPostgresReady = () => {
+  return !useMemoryDB && pool !== null;
+};
+
+// 等待 PostgreSQL 连接（带超时）
+const waitForPostgres = async (timeout = 10000) => {
+  const start = Date.now();
+  while (!isPostgresReady() && Date.now() - start < timeout) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  return isPostgresReady();
+};
+
 module.exports = {
   pool,
   query,
   transaction,
   getMemoryDB,
-  useMemoryDB: () => useMemoryDB
+  useMemoryDB: () => useMemoryDB,
+  isPostgresReady,
+  waitForPostgres
 };

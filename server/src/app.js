@@ -11,7 +11,7 @@ const os = require('os');
 const fs = require('fs');
 
 const routes = require('./routes');
-const { query } = require('./config/database');
+const { query, waitForPostgres, useMemoryDB } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -109,7 +109,23 @@ app.use((err, req, res, next) => {
 // 初始化数据库
 async function initDatabase() {
   try {
-    console.log('🔄 检查数据库初始化...');
+    console.log('🔄 等待 PostgreSQL 连接...');
+    
+    // 等待 PostgreSQL 就绪
+    const isReady = await waitForPostgres(15000);
+    
+    if (!isReady) {
+      console.log('⚠️ PostgreSQL 未就绪，跳过初始化（将使用内存数据库）');
+      return;
+    }
+    
+    // 如果使用内存数据库，跳过初始化
+    if (useMemoryDB()) {
+      console.log('⚠️ 使用内存数据库，跳过 PostgreSQL 初始化');
+      return;
+    }
+    
+    console.log('🔄 检查数据库表...');
     
     // 检查 items 表是否存在
     const checkResult = await query(`
@@ -140,6 +156,7 @@ async function initDatabase() {
     }
   } catch (error) {
     console.error('❌ 数据库初始化失败:', error.message);
+    console.error('错误详情:', error);
     // 不阻止服务器启动
   }
 }
