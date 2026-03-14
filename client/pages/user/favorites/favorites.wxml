@@ -1,0 +1,8 @@
+<view class="container container-safe">
+  <view class="empty-state">
+    <text class="empty-icon">⭐</text>
+    <text class="empty-title">暂无收藏</text>
+    <text class="empty-desc">收藏感兴趣的物品，方便随时查看</text>
+    <view class="btn btn-primary mt-4" bindtap="goToHome">去逛逛</view>
+  </view>
+</view>

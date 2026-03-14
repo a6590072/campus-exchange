@@ -1,0 +1,208 @@
+<view class="valuation-container">
+  <!-- 头部背景 -->
+  <view class="header-bg">
+    <view class="header-content">
+      <view class="ai-avatar">
+        <text class="ai-avatar-icon">🤖</text>
+        <view class="ai-pulse"></view>
+      </view>
+      <text class="header-title">AI 智能估价</text>
+      <text class="header-subtitle">基于大数据分析的精准定价</text>
+    </view>
+    <view class="header-decoration">
+      <view class="decoration-circle c1"></view>
+      <view class="decoration-circle c2"></view>
+      <view class="decoration-circle c3"></view>
+    </view>
+  </view>
+
+  <!-- 输入表单 -->
+  <view class="form-section" wx:if="{{!showResult}}">
+    <view class="form-card">
+      <!-- 物品名称 -->
+      <view class="form-item">
+        <view class="form-label">
+          <view class="label-icon">📦</view>
+          <text>物品名称</text>
+          <text class="required">*</text>
+        </view>
+        <view class="input-wrapper">
+          <input 
+            class="form-input" 
+            placeholder="例如：iPad Pro 11寸 128G"
+            value="{{itemName}}"
+            bindinput="onNameInput"
+          />
+        </view>
+      </view>
+
+      <!-- 物品描述 -->
+      <view class="form-item">
+        <view class="form-label">
+          <view class="label-icon">📝</view>
+          <text>物品描述</text>
+          <text class="required">*</text>
+        </view>
+        <view class="textarea-wrapper">
+          <textarea 
+            class="form-textarea" 
+            placeholder="描述品牌、型号、购买时间、使用情况等，越详细估价越准确"
+            value="{{itemDesc}}"
+            bindinput="onDescInput"
+            maxlength="300"
+          />
+          <text class="char-count">{{itemDesc.length || 0}}/300</text>
+        </view>
+      </view>
+
+      <!-- 分类 -->
+      <view class="form-item">
+        <view class="form-label">
+          <view class="label-icon">🏷️</view>
+          <text>物品分类</text>
+        </view>
+        <view class="options-grid">
+          <view 
+            class="option-chip {{category === item ? 'active' : ''}}"
+            wx:for="{{categories}}"
+            wx:key="*this"
+            bindtap="selectCategory"
+            data-value="{{item}}"
+          >
+            {{item}}
+          </view>
+        </view>
+      </view>
+
+      <!-- 成色 -->
+      <view class="form-item">
+        <view class="form-label">
+          <view class="label-icon">✨</view>
+          <text>物品成色</text>
+        </view>
+        <view class="condition-slider">
+          <view 
+            class="condition-item {{condition === item ? 'active' : ''}}"
+            wx:for="{{conditions}}"
+            wx:key="*this"
+            bindtap="selectCondition"
+            data-value="{{item}}"
+          >
+            <view class="condition-dot"></view>
+            <text class="condition-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 估价按钮 -->
+    <view class="action-area">
+      <button 
+        class="evaluate-btn {{itemName && itemDesc ? 'active' : ''}}"
+        bindtap="startEvaluation"
+        loading="{{isEvaluating}}"
+        disabled="{{isEvaluating || !itemName || !itemDesc}}"
+      >
+        <view class="btn-content" wx:if="{{!isEvaluating}}">
+          <text class="btn-icon">✨</text>
+          <text class="btn-text">开始AI估价</text>
+        </view>
+        <view class="btn-loading" wx:else>
+          <view class="loading-spinner"></view>
+          <text>AI分析中...</text>
+        </view>
+      </button>
+      <text class="btn-hint">AI将基于市场行情、成色、品牌等因素综合分析</text>
+    </view>
+  </view>
+
+  <!-- 估价结果 -->
+  <view class="result-section" wx:if="{{showResult && evaluationResult}}">
+    <!-- 价格卡片 -->
+    <view class="price-result-card">
+      <view class="price-header">
+        <text class="price-title">估价结果</text>
+        <view class="confidence-badge {{evaluationResult.confidence}}" wx:if="{{evaluationResult.confidence}}">
+          <text class="badge-dot"></text>
+          <text>{{evaluationResult.confidence === 'high' ? '高置信度' : evaluationResult.confidence === 'medium' ? '中置信度' : '参考价格'}}</text>
+        </view>
+      </view>
+      <view class="price-display">
+        <text class="price-currency">¥</text>
+        <text class="price-value">{{evaluationResult.estimatedPrice.suggested}}</text>
+      </view>
+      <view class="price-range-bar">
+        <view class="range-track">
+          <view class="range-fill" style="left: {{pricePercent.min}}%; width: {{pricePercent.width}}%;"></view>
+          <view class="range-marker current" style="left: {{pricePercent.current}}%;">
+            <view class="marker-dot"></view>
+            <text class="marker-label">建议价</text>
+          </view>
+        </view>
+        <view class="range-labels">
+          <text>¥{{evaluationResult.estimatedPrice.min}}</text>
+          <text>¥{{evaluationResult.estimatedPrice.max}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 市场分析 -->
+    <view class="result-card" wx:if="{{evaluationResult.marketAnalysis}}">
+      <view class="card-header">
+        <view class="header-icon gradient-1">
+          <text>📈</text>
+        </view>
+        <text class="card-title">市场分析</text>
+      </view>
+      <view class="card-body">
+        <text class="analysis-text">{{evaluationResult.marketAnalysis}}</text>
+      </view>
+    </view>
+
+    <!-- 影响因素 -->
+    <view class="result-card" wx:if="{{evaluationResult.factors && evaluationResult.factors.length > 0}}">
+      <view class="card-header">
+        <view class="header-icon gradient-2">
+          <text>🔍</text>
+        </view>
+        <text class="card-title">影响价格的因素</text>
+      </view>
+      <view class="card-body">
+        <view class="factor-list">
+          <view class="factor-item" wx:for="{{evaluationResult.factors}}" wx:key="index" style="animation-delay: {{index * 0.1}}s;">
+            <view class="factor-num">{{index + 1}}</view>
+            <text class="factor-text">{{item}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 出售建议 -->
+    <view class="result-card tips-card" wx:if="{{evaluationResult.tips}}">
+      <view class="card-header">
+        <view class="header-icon gradient-3">
+          <text>💡</text>
+        </view>
+        <text class="card-title">出售建议</text>
+      </view>
+      <view class="card-body">
+        <view class="tips-content">
+          <text class="tips-icon">💎</text>
+          <text class="tips-text">{{evaluationResult.tips}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="result-actions">
+      <button class="action-btn secondary" bindtap="goBack">
+        <text class="btn-icon">↺</text>
+        <text>重新估价</text>
+      </button>
+      <button class="action-btn primary" bindtap="usePrice">
+        <text class="btn-icon">✓</text>
+        <text>使用此价格</text>
+      </button>
+    </view>
+  </view>
+</view>

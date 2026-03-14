@@ -1,0 +1,4 @@
+<view class="container container-safe">
+  <text class="page-title">智能匹配</text>
+  <text class="page-desc">AI正在为您寻找最佳换物对象...</text>
+</view>

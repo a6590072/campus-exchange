@@ -1,0 +1,18 @@
+<view class="container container-safe">
+  <view class="settings-list">
+    <view class="setting-item" bindtap="goToProfile">
+      <text class="label">个人资料</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="setting-item" bindtap="clearCache">
+      <text class="label">清除缓存</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="setting-item" bindtap="about">
+      <text class="label">关于我们</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+  
+  <view class="btn btn-danger mt-4" bindtap="logout">退出登录</view>
+</view>

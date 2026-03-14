@@ -1,0 +1,48 @@
+<view class="container container-safe">
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && conversations.length === 0}}">
+    <image class="empty-icon" src="/images/empty-message.png" mode="aspectFit"/>
+    <text class="empty-title">暂无消息</text>
+    <text class="empty-desc">快去浏览物品，发起换物吧~</text>
+    <view class="btn btn-primary mt-4" bindtap="goToHome">去逛逛</view>
+  </view>
+
+  <!-- 消息列表 -->
+  <view class="conversation-list" wx:if="{{conversations.length > 0}}">
+    <view class="conversation-item {{item.unreadCount > 0 ? 'unread' : ''}}" 
+          wx:for="{{conversations}}" 
+          wx:key="id"
+          bindtap="goToChat"
+          data-id="{{item.id}}"
+          data-userid="{{item.otherUser.id}}">
+      
+      <view class="avatar-wrapper">
+        <image class="avatar" src="{{item.otherUser.avatar || '/images/default/avatar.svg'}}" mode="aspectFill"/>
+        <view class="unread-badge" wx:if="{{item.unreadCount > 0}}">{{item.unreadCount > 99 ? '99+' : item.unreadCount}}</view>
+      </view>
+
+      <view class="content">
+        <view class="header">
+          <text class="name">{{item.otherUser.nickname}}</text>
+          <text class="time">{{item.lastMessageTime}}</text>
+        </view>
+        <view class="message-row">
+          <text class="message {{item.unreadCount > 0 ? 'unread-text' : ''}}">{{item.lastMessage}}</text>
+          <view class="item-tag" wx:if="{{item.relatedItem}}">
+            <image src="{{item.relatedItem.cover}}" mode="aspectFill"/>
+            <text>相关物品</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="delete-btn" catchtap="deleteConversation" data-id="{{item.id}}">
+        <text>删除</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

@@ -1,0 +1,100 @@
+<view class="assistant-container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <view class="ai-avatar">
+        <text class="avatar-icon">🤖</text>
+        <view class="status-dot"></view>
+      </view>
+      <view class="header-info">
+        <text class="header-title">AI智能助手</text>
+        <text class="header-status">● 在线服务中</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view class="message-list" scroll-y scroll-into-view="{{scrollToMessage}}" enhanced show-scrollbar="{{false}}">
+    <view class="message-item {{item.type}}" wx:for="{{messages}}" wx:key="index" id="msg-{{index}}">
+      <view class="message-avatar">
+        <view class="avatar-bg {{item.type}}">
+          <text wx:if="{{item.type === 'ai'}}">🤖</text>
+          <text wx:else>{{userInfo.nickname ? userInfo.nickname[0] : '我'}}</text>
+        </view>
+      </view>
+      <view class="message-content">
+        <view class="message-bubble {{item.type}}">
+          <text class="message-text">{{item.content}}<text wx:if="{{isTyping && index === messages.length - 1 && item.type === 'ai'}}" class="typing-cursor">|</text></text>
+        </view>
+        <text class="message-time">{{item.time}}</text>
+      </view>
+    </view>
+
+    <!-- 正在输入 -->
+    <view class="message-item ai" wx:if="{{isTyping}}">
+      <view class="message-avatar">
+        <view class="avatar-bg ai">
+          <text>🤖</text>
+        </view>
+      </view>
+      <view class="message-content">
+        <view class="typing-indicator">
+          <view class="typing-dot"></view>
+          <view class="typing-dot"></view>
+          <view class="typing-dot"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 快捷问题 -->
+    <view class="quick-section" wx:if="{{messages.length <= 1}}">
+      <view class="quick-header">
+        <view class="quick-line"></view>
+        <text class="quick-title">💡 常见问题</text>
+        <view class="quick-line"></view>
+      </view>
+      <view class="quick-grid">
+        <view 
+          class="quick-card" 
+          wx:for="{{quickQuestions}}" 
+          wx:key="*this"
+          bindtap="sendQuickQuestion"
+          data-question="{{item}}"
+        >
+          <text class="quick-icon">❓</text>
+          <text class="quick-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    <view id="msg-bottom"></view>
+  </scroll-view>
+
+  <!-- 输入框 -->
+  <view class="input-section">
+    <view class="input-wrapper">
+      <view class="input-box">
+        <input 
+          class="message-input"
+          placeholder="输入你的问题..."
+          value="{{inputText}}"
+          bindinput="onInputChange"
+          confirm-type="send"
+          bindconfirm="sendMessage"
+        />
+        <view class="input-actions">
+          <view class="action-icon" bindtap="startVoiceInput">
+            <text>🎤</text>
+          </view>
+        </view>
+      </view>
+      <button 
+        class="send-btn {{inputText ? 'active' : ''}}"
+        bindtap="sendMessage"
+        disabled="{{!inputText || isTyping}}"
+      >
+        <text class="send-icon">➤</text>
+      </button>
+    </view>
+  </view>
+</view>

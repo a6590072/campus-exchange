@@ -1,0 +1,167 @@
+.tab-bar {
+  display: flex;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) 0;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+.tab-item.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.tab-item .badge {
+  position: absolute;
+  top: 4rpx;
+  right: 20rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  background: var(--error);
+  color: #fff;
+  font-size: 20rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6rpx;
+}
+
+/* 物品列表 */
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.item-card {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.item-image {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: var(--radius-md);
+  margin-right: var(--space-3);
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-tags {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.item-tags .tag {
+  padding: 4rpx 12rpx;
+  font-size: 22rpx;
+  border-radius: var(--radius-sm);
+}
+
+.item-tags .condition {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
+
+.item-tags .status {
+  background: var(--background);
+}
+
+.item-tags .status.active {
+  color: var(--success);
+}
+
+.item-tags .status.exchanged {
+  color: var(--text-tertiary);
+}
+
+.item-tags .status.offline {
+  color: var(--text-tertiary);
+}
+
+.item-time {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-left: var(--space-2);
+}
+
+.action-btn {
+  padding: var(--space-1) var(--space-2);
+  font-size: 24rpx;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.action-btn.edit {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
+
+.action-btn.delete {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: var(--space-3);
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,64 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/category/category",
+    "pages/search/search",
+    "pages/item/detail/detail",
+    "pages/item/publish/publish",
+    "pages/item/edit/edit",
+    "pages/exchange/match/match",
+    "pages/exchange/request/request",
+    "pages/exchange/progress/progress",
+    "pages/message/list/list",
+    "pages/message/chat/chat",
+    "pages/user/profile/profile",
+    "pages/user/my-items/my-items",
+    "pages/user/my-exchanges/my-exchanges",
+    "pages/user/favorites/favorites",
+    "pages/user/settings/settings",
+    "pages/ai/valuation/valuation",
+    "pages/ai/publish/publish",
+    "pages/ai/assistant/assistant"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#6366F1",
+    "navigationBarTitleText": "物的第二站",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F8FAFC"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/category/category",
+        "text": "分类"
+      },
+      {
+        "pagePath": "pages/item/publish/publish",
+        "text": "发布"
+      },
+      {
+        "pagePath": "pages/message/list/list",
+        "text": "消息"
+      },
+      {
+        "pagePath": "pages/user/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于推荐附近的物品"
+    }
+  },
+  "requiredBackgroundModes": ["audio"],
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {},
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,189 @@
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="header">
+    <view class="header-content">
+      <view class="logo">
+        <view class="logo-icon">🔄</view>
+        <text class="logo-text">物的第二站</text>
+      </view>
+      <view class="header-actions">
+        <view class="action-btn" bindtap="scanCode">
+          <text>📷</text>
+        </view>
+        <view class="action-btn" bindtap="goToMessages">
+          <text>💬</text>
+          <view class="badge" wx:if="{{unreadCount > 0}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <view class="search-bar" bindtap="goToSearch">
+      <text class="search-icon">🔍</text>
+      <text class="search-placeholder">搜索物品、书籍、数码...</text>
+      <view class="search-btn">
+        <text>GO</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Banner轮播 -->
+  <view class="banner-section">
+    <swiper class="banner-swiper" indicator-dots="{{false}}" autoplay="{{true}}" interval="5000" duration="500" circular="{{true}}" bindchange="onBannerChange">
+      <swiper-item wx:for="{{banners}}" wx:key="id">
+        <view class="banner-item" bindtap="onBannerTap" data-id="{{item.id}}">
+          <image class="banner-image" src="{{item.image}}" mode="aspectFill"/>
+          <view class="banner-overlay">
+            <text class="banner-title">{{item.title}}</text>
+            <text class="banner-subtitle">{{item.subtitle}}</text>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
+    <view class="banner-dots">
+      <view class="banner-dot {{currentBanner === index ? 'active' : ''}}" wx:for="{{banners}}" wx:key="id"></view>
+    </view>
+  </view>
+
+  <!-- AI功能区 -->
+  <view class="ai-section">
+    <view class="ai-header">
+      <view class="ai-title">
+        <view class="ai-title-icon">🤖</view>
+        <text class="ai-title-text">AI智能助手</text>
+      </view>
+      <view class="ai-more" bindtap="goToAIAssistant">
+        <text>更多</text>
+        <text>›</text>
+      </view>
+    </view>
+    <view class="ai-grid">
+      <view class="ai-card" bindtap="goToAIPublish">
+        <view class="ai-card-icon gradient-1">
+          <text>✨</text>
+        </view>
+        <text class="ai-card-name">AI发布</text>
+        <text class="ai-card-desc">说话就能发布</text>
+      </view>
+      <view class="ai-card" bindtap="goToAIEvaluation">
+        <view class="ai-card-icon gradient-2">
+          <text>💰</text>
+        </view>
+        <text class="ai-card-name">AI估价</text>
+        <text class="ai-card-desc">智能定价建议</text>
+      </view>
+      <view class="ai-card" bindtap="goToAIAssistant">
+        <view class="ai-card-icon gradient-3">
+          <text>💬</text>
+        </view>
+        <text class="ai-card-name">AI客服</text>
+        <text class="ai-card-desc">24小时在线</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类区 -->
+  <view class="category-section">
+    <view class="section-header">
+      <text class="section-title">物品分类</text>
+      <view class="section-more" bindtap="goToCategory">
+        <text>全部分类</text>
+        <text>›</text>
+      </view>
+    </view>
+    <scroll-view class="category-scroll" scroll-x="{{true}}" show-scrollbar="{{false}}">
+      <view class="category-list">
+        <view class="category-item" wx:for="{{categories}}" wx:key="id" bindtap="onCategoryTap" data-id="{{item.id}}">
+          <view class="category-icon" style="background: {{item.bgColor}}">
+            <text>{{item.icon}}</text>
+          </view>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 推荐物品 -->
+  <view class="recommend-section" wx:if="{{recommendItems.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">热门推荐</text>
+      <view class="section-more" bindtap="goToMoreRecommend">
+        <text>查看更多</text>
+        <text>›</text>
+      </view>
+    </view>
+    <scroll-view class="recommend-scroll" scroll-x="{{true}}" show-scrollbar="{{false}}">
+      <view class="recommend-list">
+        <view class="recommend-card" wx:for="{{recommendItems}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+          <view class="recommend-image-wrapper">
+            <image class="recommend-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="{{true}}"/>
+            <view class="recommend-badge" wx:if="{{item.ai_valuation}}">AI估价</view>
+            <view class="recommend-favorite {{item.isFavorited ? 'active' : ''}}" catchtap="toggleFavorite" data-id="{{item.id}}">
+              <text>{{item.isFavorited ? '❤️' : '🤍'}}</text>
+            </view>
+          </view>
+          <view class="recommend-info">
+            <text class="recommend-title">{{item.title}}</text>
+            <view class="recommend-meta">
+              <text class="recommend-price">¥{{item.suggested_price}}</text>
+              <text class="recommend-condition">{{item.condition}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 最新物品 -->
+  <view class="latest-section">
+    <view class="section-header">
+      <text class="section-title">最新发布</text>
+      <view class="section-more" bindtap="goToMoreLatest">
+        <text>查看更多</text>
+        <text>›</text>
+      </view>
+    </view>
+    <view class="item-grid">
+      <view class="item-card" wx:for="{{latestItems}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+        <view class="item-image-wrapper">
+          <image class="item-image" src="{{item.images[0]}}" mode="aspectFill" lazy-load="{{true}}"/>
+          <view class="item-tags">
+            <text class="item-tag category">{{item.category}}</text>
+          </view>
+        </view>
+        <view class="item-info">
+          <text class="item-title">{{item.title}}</text>
+          <view class="item-price-row">
+            <text class="item-price">¥{{item.suggested_price}}</text>
+            <text class="item-original-price" wx:if="{{item.original_price}}">¥{{item.original_price}}</text>
+          </view>
+          <view class="item-footer">
+            <view class="item-owner">
+              <image class="item-owner-avatar" src="{{item.owner_avatar}}" mode="aspectFill"/>
+              <text class="item-owner-name">{{item.owner_nickname}}</text>
+            </view>
+            <view class="item-stats">
+              <view class="item-stat">
+                <text>👁</text>
+                <text>{{item.view_count}}</text>
+              </view>
+              <view class="item-stat">
+                <text>❤️</text>
+                <text>{{item.favorite_count}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="loading-more" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+</view>

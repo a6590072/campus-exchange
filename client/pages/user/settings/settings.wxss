@@ -1,0 +1,27 @@
+.settings-list {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border-bottom: 1rpx solid var(--border);
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-item .label {
+  font-size: 30rpx;
+  color: var(--text-primary);
+}
+
+.setting-item .arrow {
+  font-size: 32rpx;
+  color: var(--text-tertiary);
+}

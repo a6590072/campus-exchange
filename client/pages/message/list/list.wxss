@@ -1,0 +1,157 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  width: 240rpx;
+  height: 240rpx;
+  margin-bottom: var(--space-4);
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* 会话列表 */
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--surface);
+  border-bottom: 1rpx solid var(--border);
+  position: relative;
+}
+
+.conversation-item.unread {
+  background: rgba(99, 102, 241, 0.03);
+}
+
+.avatar-wrapper {
+  position: relative;
+  margin-right: var(--space-3);
+}
+
+.avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+}
+
+.unread-badge {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  min-width: 36rpx;
+  height: 36rpx;
+  background: var(--error);
+  color: #fff;
+  font-size: 22rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8rpx;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.time {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+.message-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.message {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: var(--space-2);
+}
+
+.message.unread-text {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.item-tag {
+  display: flex;
+  align-items: center;
+  background: var(--background);
+  border-radius: var(--radius-md);
+  padding: 4rpx 12rpx;
+  flex-shrink: 0;
+}
+
+.item-tag image {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: var(--radius-sm);
+  margin-right: 8rpx;
+}
+
+.item-tag text {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.delete-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 120rpx;
+  background: var(--error);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  transform: translateX(100%);
+  transition: transform 0.3s;
+}
+
+.conversation-item.show-delete .delete-btn {
+  transform: translateX(0);
+}

@@ -1,0 +1,233 @@
+<view class="detail-container">
+  <!-- 沉浸式图片画廊 -->
+  <view class="gallery-section">
+    <swiper class="gallery-swiper" indicator-dots autoplay circular bindchange="onSwiperChange" previous-margin="40rpx" next-margin="40rpx">
+      <swiper-item wx:for="{{item.images}}" wx:key="index" class="gallery-item">
+        <view class="gallery-image-wrapper">
+          <image src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" class="gallery-image"/>
+          <view class="gallery-overlay"></view>
+        </view>
+      </swiper-item>
+    </swiper>
+    <view class="gallery-indicator" wx:if="{{item.images && item.images.length > 1}}">
+      <view class="indicator-dot {{currentImageIndex === index ? 'active' : ''}}" wx:for="{{item.images}}" wx:key="index"></view>
+    </view>
+    <view class="gallery-badge">
+      <text class="badge-text">{{currentImageIndex + 1}} / {{item.images.length}}</text>
+    </view>
+  </view>
+
+  <!-- 主内容区 -->
+  <view class="content-wrapper">
+    <!-- 物品信息卡片 -->
+    <view class="info-card" style="animation-delay: 0.1s;">
+      <view class="info-header">
+        <view class="tag-group">
+          <view class="tag tag-condition" wx:if="{{item.condition_level}}">
+            <text class="tag-icon">✨</text>
+            <text>{{item.condition_level}}</text>
+          </view>
+          <view class="tag tag-category" wx:for="{{item.ai_tags}}" wx:for-item="tag" wx:key="*this" wx:if="{{index < 2}}">
+            {{tag}}
+          </view>
+        </view>
+        <view class="favorite-wrapper" bindtap="toggleFavorite">
+          <view class="favorite-btn {{isFavorite ? 'active' : ''}}">
+            <text class="favorite-icon">{{isFavorite ? '❤️' : '🤍'}}</text>
+          </view>
+          <text class="favorite-count">{{item.favorite_count || 0}}</text>
+        </view>
+      </view>
+
+      <text class="item-title">{{item.title}}</text>
+
+      <!-- AI估值区域 -->
+      <view class="price-section">
+        <view class="price-main">
+          <text class="price-label">AI估值</text>
+          <view class="price-value">
+            <text class="price-symbol">¥</text>
+            <text class="price-number">{{item.estimated_value_ai}}</text>
+          </view>
+        </view>
+        <view class="price-divider"></view>
+        <view class="price-original" wx:if="{{item.original_price}}">
+          <text class="original-label">原价</text>
+          <text class="original-value">¥{{item.original_price}}</text>
+        </view>
+      </view>
+
+      <!-- 元信息 -->
+      <view class="meta-section">
+        <view class="meta-item">
+          <view class="meta-icon">📍</view>
+          <text>{{item.location_name || '校内交易'}}</text>
+        </view>
+        <view class="meta-item">
+          <view class="meta-icon">👁</view>
+          <text>{{item.view_count || 0}}次浏览</text>
+        </view>
+        <view class="meta-item">
+          <view class="meta-icon">⏰</view>
+          <text>{{item.published_at}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 换物需求卡片 -->
+    <view class="section-card exchange-card" wx:if="{{item.exchange_type || item.want_description}}" style="animation-delay: 0.2s;">
+      <view class="section-header">
+        <view class="section-icon-wrapper gradient-1">
+          <text class="section-icon">🔄</text>
+        </view>
+        <text class="section-title">换物需求</text>
+      </view>
+      <view class="exchange-content">
+        <view class="exchange-row">
+          <text class="exchange-label">交换类型</text>
+          <view class="exchange-type-badge {{item.exchange_type === 'specific' ? 'specific' : 'any'}}">
+            {{item.exchange_type === 'specific' ? '指定换' : '任意换'}}
+          </view>
+        </view>
+        <view class="exchange-row" wx:if="{{item.want_description}}">
+          <text class="exchange-label">想要换</text>
+          <text class="exchange-value">{{item.want_description}}</text>
+        </view>
+        <view class="exchange-row" wx:if="{{item.cash_acceptable}}">
+          <text class="exchange-label">接受补差价</text>
+          <text class="exchange-value highlight">
+            ¥{{(item.cash_adjustment_range && item.cash_adjustment_range.min) || 0}} - ¥{{(item.cash_adjustment_range && item.cash_adjustment_range.max) || '不限'}}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 成色描述卡片 -->
+    <view class="section-card condition-card" style="animation-delay: 0.3s;">
+      <view class="section-header">
+        <view class="section-icon-wrapper gradient-2">
+          <text class="section-icon">📋</text>
+        </view>
+        <text class="section-title">成色描述</text>
+      </view>
+      <view class="condition-content">
+        <text class="condition-text">{{item.condition_description || '暂无描述'}}</text>
+      </view>
+    </view>
+
+    <!-- AI智能分析卡片 -->
+    <view class="section-card ai-card" wx:if="{{item.ai_features || item.ai_description}}" style="animation-delay: 0.4s;">
+      <view class="ai-header">
+        <view class="ai-title-group">
+          <view class="ai-icon-wrapper">
+            <text class="ai-icon">🤖</text>
+          </view>
+          <view class="ai-title-text">
+            <text class="ai-main-title">AI智能分析</text>
+            <text class="ai-subtitle">基于深度学习的物品识别</text>
+          </view>
+        </view>
+        <view class="ai-badge" wx:if="{{item.ai_features && item.ai_features.confidence}}">
+          置信度 {{item.ai_features.confidence}}%
+        </view>
+      </view>
+      <view class="ai-content">
+        <view class="ai-features" wx:if="{{item.ai_features}}">
+          <view class="feature-tag" wx:if="{{item.ai_features.brand}}">
+            <text class="feature-label">品牌</text>
+            <text class="feature-value">{{item.ai_features.brand}}</text>
+          </view>
+          <view class="feature-tag" wx:if="{{item.ai_features.model}}">
+            <text class="feature-label">型号</text>
+            <text class="feature-value">{{item.ai_features.model}}</text>
+          </view>
+          <view class="feature-tag" wx:if="{{item.ai_features.conditionScore}}">
+            <text class="feature-label">成色</text>
+            <text class="feature-value">{{item.ai_features.conditionScore}}分</text>
+          </view>
+        </view>
+        <view class="ai-description" wx:if="{{item.ai_description}}">
+          <text>{{item.ai_description}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 发布者信息卡片 -->
+    <view class="section-card owner-card" style="animation-delay: 0.5s;">
+      <view class="section-header">
+        <view class="section-icon-wrapper gradient-3">
+          <text class="section-icon">👤</text>
+        </view>
+        <text class="section-title">发布者</text>
+      </view>
+      <view class="owner-content" bindtap="goToUserProfile">
+        <view class="owner-avatar-wrapper">
+          <image class="owner-avatar" src="{{item.owner_avatar || '/images/default/avatar.svg'}}" mode="aspectFill"/>
+          <view class="owner-verify-badge" wx:if="{{item.owner_verified}}">
+            <text>✓</text>
+          </view>
+        </view>
+        <view class="owner-info">
+          <text class="owner-name">{{item.owner_nickname}}</text>
+          <view class="owner-meta">
+            <text class="owner-school" wx:if="{{item.school_name}}">{{item.school_name}}</text>
+            <text class="owner-verify-text" wx:if="{{item.owner_verified}}">已认证</text>
+          </view>
+        </view>
+        <view class="owner-arrow">
+          <text>›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 推荐匹配 -->
+    <view class="matches-section" wx:if="{{matches.length > 0}}" style="animation-delay: 0.6s;">
+      <view class="matches-header">
+        <text class="matches-title">可能感兴趣的换物</text>
+        <view class="matches-more" bindtap="goToMatches">
+          <text>查看更多</text>
+          <text class="more-arrow">›</text>
+        </view>
+      </view>
+      <scroll-view class="matches-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="matches-list">
+          <view class="match-item" wx:for="{{matches}}" wx:key="id" bindtap="goToMatchDetail" data-id="{{item.id}}">
+            <view class="match-image-wrapper">
+              <image class="match-image" src="{{item.cover_image || '/images/default/item.svg'}}" mode="aspectFill"/>
+            </view>
+            <text class="match-title">{{item.title}}</text>
+            <text class="match-price">¥{{item.estimated_value_ai}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 底部安全区域 -->
+    <view class="safe-area-bottom"></view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="action-bar">
+    <view class="action-group">
+      <view class="action-btn" bindtap="goToHome">
+        <view class="action-icon-wrapper">
+          <text class="action-icon">🏠</text>
+        </view>
+        <text class="action-text">首页</text>
+      </view>
+      <view class="action-divider"></view>
+      <view class="action-btn" bindtap="contactOwner">
+        <view class="action-icon-wrapper">
+          <text class="action-icon">💬</text>
+        </view>
+        <text class="action-text">私聊</text>
+      </view>
+    </view>
+    <view class="exchange-action">
+      <view class="exchange-btn {{canExchange ? '' : 'disabled'}}" bindtap="requestExchange">
+        <text class="exchange-icon">🔄</text>
+        <text class="exchange-text">发起换物</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,251 @@
+.search-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  background: var(--surface);
+  border-radius: var(--radius-full);
+  padding: 0 var(--space-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-input-wrapper .icon {
+  font-size: 28rpx;
+  margin-right: var(--space-2);
+  color: var(--text-tertiary);
+}
+
+.search-input {
+  flex: 1;
+  height: 100%;
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.clear-btn {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  padding: var(--space-1);
+}
+
+.cancel-btn {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-left: var(--space-3);
+}
+
+/* 搜索历史 */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.section-header .title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.section-header .clear {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.history-item {
+  padding: var(--space-1) var(--space-3);
+  background: var(--surface);
+  border-radius: var(--radius-full);
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+/* 热门搜索 */
+.hot-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.hot-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.hot-item .rank {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  margin-right: var(--space-2);
+}
+
+.hot-item.top .rank {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  color: #fff;
+  border-radius: var(--radius-md);
+}
+
+.hot-item .keyword {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+/* 搜索结果 */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+}
+
+.filter-item {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-2) 0;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.filter-item.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* 物品列表 */
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.item-card {
+  display: flex;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.item-image {
+  width: 200rpx;
+  height: 200rpx;
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+}
+
+.item-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.item-tags {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.item-tags .tag {
+  padding: 4rpx 12rpx;
+  font-size: 22rpx;
+  border-radius: var(--radius-sm);
+}
+
+.item-tags .condition {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
+
+.item-tags .category {
+  background: var(--background);
+  color: var(--text-secondary);
+}
+
+.item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.item-footer .user-info {
+  display: flex;
+  align-items: center;
+}
+
+.item-footer .avatar-small {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  margin-right: var(--space-1);
+}
+
+.item-footer .nickname {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.item-footer .time {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: var(--space-3);
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,149 @@
+<view class="container container-safe">
+  <!-- 图片上传 -->
+  <view class="section">
+    <view class="section-title">物品图片 <text class="required">*</text></view>
+    <view class="image-upload">
+      <view class="image-list">
+        <view class="image-item" wx:for="{{images}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewImage"/>
+          <view class="delete-btn" data-index="{{index}}" bindtap="deleteImage">×</view>
+        </view>
+        <view class="upload-btn" bindtap="chooseImage" wx:if="{{images.length < 9}}">
+          <text class="icon">📷</text>
+          <text class="text">{{images.length}}/9</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="section card-flat">
+    <view class="form-item">
+      <text class="label">标题 <text class="required">*</text></text>
+      <input class="input" placeholder="描述一下你的物品，如：iPhone 14 Pro 256G" value="{{form.title}}" bindinput="onTitleInput" maxlength="50"/>
+      <text class="count">{{form.title.length}}/50</text>
+    </view>
+
+    <view class="form-item">
+      <text class="label">分类 <text class="required">*</text></text>
+      <picker mode="selector" range="{{categories}}" range-key="name" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <view class="picker {{form.categoryName ? '' : 'placeholder'}}">
+          {{form.categoryName || '请选择分类'}}
+          <text class="arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">成色 <text class="required">*</text></text>
+      <picker mode="selector" range="{{conditions}}" range-key="label" value="{{conditionIndex}}" bindchange="onConditionChange">
+        <view class="picker {{form.conditionLevel ? '' : 'placeholder'}}">
+          {{form.conditionLevel || '请选择成色'}}
+          <text class="arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">原价</text>
+      <input class="input" type="digit" placeholder="请输入原价（选填）" value="{{form.originalPrice}}" bindinput="onPriceInput"/>
+      <text class="unit">元</text>
+    </view>
+
+    <!-- AI估价入口 -->
+    <view class="ai-valuation-entry" bindtap="goToAIEvaluation">
+      <view class="ai-icon">🤖</view>
+      <view class="ai-text">
+        <view class="ai-title">不知道定价？让AI帮你估价</view>
+        <view class="ai-desc">基于市场行情给出专业建议</view>
+      </view>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 成色描述 -->
+  <view class="section card-flat">
+    <view class="form-item vertical">
+      <text class="label">成色描述 <text class="required">*</text></text>
+      <textarea class="textarea" placeholder="详细描述物品的成色、使用情况、瑕疵等，有助于AI更准确地估值" value="{{form.conditionDescription}}" bindinput="onConditionDescInput" maxlength="500"/>
+      <text class="count">{{form.conditionDescription.length}}/500</text>
+    </view>
+  </view>
+
+  <!-- 换物需求 -->
+  <view class="section card-flat">
+    <view class="section-subtitle">换物需求</view>
+
+    <view class="form-item">
+      <text class="label">交换类型</text>
+      <view class="radio-group">
+        <view class="radio {{form.exchangeType === 'any' ? 'active' : ''}}" bindtap="onExchangeTypeChange" data-type="any">任意换</view>
+        <view class="radio {{form.exchangeType === 'specific' ? 'active' : ''}}" bindtap="onExchangeTypeChange" data-type="specific">指定换</view>
+      </view>
+    </view>
+
+    <view class="form-item" wx:if="{{form.exchangeType === 'specific'}}">
+      <text class="label">想要换什么</text>
+      <input class="input" placeholder="描述你想换的物品" value="{{form.wantDescription}}" bindinput="onWantDescInput"/>
+    </view>
+
+    <view class="form-item">
+      <text class="label">接受补差价</text>
+      <switch checked="{{form.cashAcceptable}}" bindchange="onCashAcceptChange" color="#6366F1"/>
+    </view>
+
+    <view class="form-item" wx:if="{{form.cashAcceptable}}">
+      <text class="label">差价范围</text>
+      <view class="range-inputs">
+        <input class="input range" type="digit" placeholder="最小" value="{{form.cashMin}}" bindinput="onCashMinInput"/>
+        <text class="range-separator">-</text>
+        <input class="input range" type="digit" placeholder="最大" value="{{form.cashMax}}" bindinput="onCashMaxInput"/>
+        <text class="unit">元</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- AI估值结果 -->
+  <view class="section card-flat ai-section" wx:if="{{aiEvaluation}}">
+    <view class="ai-header">
+      <text class="ai-icon">✨</text>
+      <text class="ai-title">AI智能估值</text>
+    </view>
+    <view class="ai-content">
+      <view class="ai-value">
+        <text class="ai-label">估值区间</text>
+        <text class="ai-price">¥{{aiEvaluation.estimatedValueMin}} - ¥{{aiEvaluation.estimatedValueMax}}</text>
+      </view>
+      <view class="ai-detail">
+        <text class="ai-label">建议售价</text>
+        <text class="ai-suggest">¥{{aiEvaluation.estimatedValue}}</text>
+      </view>
+      <view class="ai-tips" wx:if="{{aiEvaluation.tradingTips}}">
+        <text class="ai-label">交易建议</text>
+        <text class="ai-text">{{aiEvaluation.tradingTips}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 位置信息 -->
+  <view class="section card-flat">
+    <view class="form-item">
+      <text class="label">交易地点</text>
+      <view class="location-picker" bindtap="chooseLocation">
+        <text class="location-text {{form.locationName ? '' : 'placeholder'}}">{{form.locationName || '选择交易地点'}}</text>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-section">
+    <view class="ai-btn {{isAiLoading ? 'loading' : ''}}" bindtap="getAiValuation" wx:if="{{!aiEvaluation}}">
+      <text wx:if="{{!isAiLoading}}">✨ 获取AI估值</text>
+      <text wx:else>AI分析中...</text>
+    </view>
+    <view class="btn btn-primary btn-lg {{canSubmit ? '' : 'btn-disabled'}}" bindtap="submitForm">
+      发布物品
+    </view>
+  </view>
+</view>
