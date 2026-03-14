@@ -2,10 +2,10 @@ App({
   globalData: {
     userInfo: null,
     token: null,
-    // 生产环境使用 Render 云端地址
+    // 生产环境使用 Railway 云端地址
     // 本地开发使用: http://localhost:3001/api/v1
     // 局域网测试使用: http://192.168.1.27:3001/api/v1
-    apiBaseUrl: 'https://campus-exchange-api.onrender.com/api/v1',
+    apiBaseUrl: 'https://campus-exchange-production.up.railway.app/api/v1',
     systemInfo: null
   },
 

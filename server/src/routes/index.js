@@ -37,6 +37,11 @@ router.use('/ai', aiRoutes);
 router.post('/ai/evaluate/preview', aiController.previewEvaluation);
 router.get('/ai/config', aiController.getAIConfig);
 
+// 首页数据（公开访问，无需登录）
+router.get('/items/home', itemController.getHomeData);
+router.get('/items', itemController.getItems);
+router.get('/items/:id', itemController.getItemDetail);
+
 // ============================================
 // 需要认证的路由
 // ============================================
@@ -61,12 +66,9 @@ router.post('/upload/images',
 );
 router.delete('/upload/images/:filename', uploadController.deleteImage);
 
-// 物品相关
-router.get('/items', itemController.getItems);
+// 物品相关（需要登录）
 router.post('/items', itemController.createItem);
 router.get('/items/my', itemController.getMyItems);
-router.get('/items/home', itemController.getHomeData);
-router.get('/items/:id', itemController.getItemDetail);
 router.put('/items/:id', itemController.updateItem);
 router.delete('/items/:id', itemController.deleteItem);
 

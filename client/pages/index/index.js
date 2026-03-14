@@ -79,6 +79,10 @@ Page({
       }
     } catch (error) {
       console.error('加载首页数据失败，使用模拟数据:', error);
+      // 如果是401错误，说明未登录，使用模拟数据
+      if (error.message && (error.message.includes('401') || error.message.includes('登录'))) {
+        console.log('用户未登录，使用模拟数据展示');
+      }
       // 使用模拟数据
       this.setMockData();
     }
