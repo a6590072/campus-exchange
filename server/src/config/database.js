@@ -145,8 +145,8 @@ function initMemoryDB() {
   console.log('✅ 内存数据库初始化完成！');
 }
 
-// 检查是否使用内存数据库
-let useMemoryDB = false;
+// 检查是否使用内存数据库（可以通过环境变量强制启用）
+let useMemoryDB = process.env.USE_MEMORY_DB === 'true';
 
 // 支持 Render 的 DATABASE_URL 或本地配置
 const connectionConfig = process.env.DATABASE_URL
