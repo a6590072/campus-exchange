@@ -136,6 +136,27 @@ class Item {
    * 获取物品列表
    */
   static async findList({ categoryId, status = 'active', page = 1, limit = 10, excludeUserId = null }) {
+    // 如果使用内存数据库
+    if (useMemoryDB()) {
+      const memoryDB = getMemoryDB();
+      let items = memoryDB.items.filter(i => i.status === status);
+      
+      if (categoryId) {
+        items = items.filter(i => i.category_id === categoryId);
+      }
+      
+      if (excludeUserId) {
+        items = items.filter(i => i.owner_id !== excludeUserId);
+      }
+      
+      // 按创建时间排序
+      items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      
+      // 分页
+      const offset = (page - 1) * limit;
+      return items.slice(offset, offset + limit);
+    }
+    
     let sql = `
       SELECT i.*, 
              u.nickname as owner_nickname, 
@@ -177,6 +198,18 @@ class Item {
    * 获取物品总数
    */
   static async count({ categoryId, status = 'active' }) {
+    // 如果使用内存数据库
+    if (useMemoryDB()) {
+      const memoryDB = getMemoryDB();
+      let items = memoryDB.items.filter(i => i.status === status);
+      
+      if (categoryId) {
+        items = items.filter(i => i.category_id === categoryId);
+      }
+      
+      return items.length;
+    }
+    
     let sql = 'SELECT COUNT(*) as total FROM items WHERE status = $1';
     const params = [status];
 
