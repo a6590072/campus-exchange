@@ -1,8 +1,9 @@
 const OpenAI = require('openai');
 
 // 初始化阿里百炼客户端
+const apiKey = process.env.DASHSCOPE_API_KEY || process.env.OPENAI_API_KEY || 'sk-sp-80d30ee1dfc44b72bd7b456d110b1727';
 const client = new OpenAI({
-  apiKey: process.env.DASHSCOPE_API_KEY || process.env.OPENAI_API_KEY,
+  apiKey: apiKey,
   baseURL: process.env.DASHSCOPE_BASE_URL || 'https://coding.dashscope.aliyuncs.com/v1',
 });
 
