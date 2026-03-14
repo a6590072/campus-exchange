@@ -111,8 +111,8 @@ async function initDatabase() {
   try {
     console.log('🔄 等待 PostgreSQL 连接...');
     
-    // 等待 PostgreSQL 就绪
-    const isReady = await waitForPostgres(15000);
+    // 等待 PostgreSQL 就绪（增加等待时间到30秒）
+    const isReady = await waitForPostgres(30000);
     
     if (!isReady) {
       console.log('⚠️ PostgreSQL 未就绪，跳过初始化（将使用内存数据库）');

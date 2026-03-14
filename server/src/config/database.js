@@ -168,25 +168,36 @@ let pool = null;
 // 尝试连接 PostgreSQL
 async function initPostgres() {
   try {
+    console.log('🔄 正在连接 PostgreSQL...');
+    console.log('连接配置:', {
+      host: connectionConfig.host || '使用 DATABASE_URL',
+      port: connectionConfig.port || '默认',
+      database: connectionConfig.database || '使用 DATABASE_URL'
+    });
+    
     pool = new Pool({
       ...connectionConfig,
-      min: parseInt(process.env.DB_POOL_MIN) || 2,
-      max: parseInt(process.env.DB_POOL_MAX) || 10,
+      min: parseInt(process.env.DB_POOL_MIN) || 1,
+      max: parseInt(process.env.DB_POOL_MAX) || 5,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      connectionTimeoutMillis: 10000, // 增加到10秒
+      statement_timeout: 30000,
     });
 
     pool.on('error', (err) => {
-      console.error('PostgreSQL error:', err);
-      useMemoryDB = true;
-      initMemoryDB();
+      console.error('PostgreSQL pool error:', err);
     });
     
     // 测试连接
-    await pool.query('SELECT NOW()');
-    console.log('✅ PostgreSQL 连接成功');
+    const client = await pool.connect();
+    const result = await client.query('SELECT NOW()');
+    client.release();
+    
+    console.log('✅ PostgreSQL 连接成功，服务器时间:', result.rows[0].now);
+    useMemoryDB = false;
   } catch (error) {
-    console.log('⚠️ PostgreSQL 连接失败，切换到内存数据库:', error.message);
+    console.error('⚠️ PostgreSQL 连接失败:', error.message);
+    console.error('错误详情:', error);
     useMemoryDB = true;
     pool = null;
     initMemoryDB();
