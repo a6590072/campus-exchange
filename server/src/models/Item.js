@@ -1,4 +1,4 @@
-const { query, transaction } = require('../config/database');
+const { query, transaction, getMemoryDB, useMemoryDB } = require('../config/database');
 
 class Item {
   /**
@@ -246,6 +246,24 @@ class Item {
    * 获取首页数据
    */
   static async getHomeData(limit = 6) {
+    // 如果使用内存数据库
+    if (useMemoryDB()) {
+      const memoryDB = getMemoryDB();
+      const items = memoryDB.items.filter(i => i.status === 'active');
+      
+      // 最新物品
+      const latest = [...items]
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, limit);
+      
+      // 热门物品（按浏览量）
+      const hot = [...items]
+        .sort((a, b) => b.view_count - a.view_count)
+        .slice(0, 4);
+      
+      return { latest, hot };
+    }
+    
     // 最新物品
     const latestResult = await query(
       `SELECT i.*, 
