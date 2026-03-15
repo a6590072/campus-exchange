@@ -88,7 +88,9 @@ Page({
       // 监听分块数据
       let fullText = '';
       requestTask.onChunkReceived((res) => {
-        const chunk = res.data;
+        // 将 ArrayBuffer 转换为字符串
+        const uint8Array = new Uint8Array(res.data);
+        const chunk = new TextDecoder('utf-8').decode(uint8Array);
         console.log('收到数据块:', chunk);
         
         // 解析 SSE 格式的数据
@@ -110,7 +112,7 @@ Page({
                 this.setData({ isTyping: false });
               }
             } catch (e) {
-              console.error('解析数据块失败:', e);
+              console.error('解析数据块失败:', e, '行内容:', line);
             }
           }
         }
