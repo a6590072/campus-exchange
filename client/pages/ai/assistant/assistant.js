@@ -51,6 +51,7 @@ Page({
     };
 
     const newMessages = [...messages, userMessage, aiMessage];
+    const aiMessageIndex = newMessages.length - 1;
 
     this.setData({
       messages: newMessages,
@@ -61,32 +62,64 @@ Page({
     this.scrollToBottom();
 
     try {
-      // 使用 wx.requestTask 实现流式响应
+      // 使用 wx.request 请求流式响应
       const requestTask = wx.request({
         url: `${app.globalData.apiBaseUrl}/ai/customer-service`,
         method: 'POST',
-        data: { question: inputText },
+        data: { 
+          question: inputText,
+          stream: true // 请求流式响应
+        },
         enableChunked: true, // 启用分块传输
         success: (res) => {
-          // 非流式响应的兜底处理
-          if (res.data && res.data.success) {
-            this.streamText(res.data.data.answer, newMessages.length - 1);
+          console.log('AI客服响应:', res);
+          // 处理非流式响应的兜底
+          if (res.data && res.data.success && res.data.data) {
+            this.streamText(res.data.data.answer, aiMessageIndex);
           }
         },
         fail: (error) => {
           console.error('AI客服请求失败:', error);
-          this.updateMessage(newMessages.length - 1, '网络连接失败，请检查网络后重试。');
+          this.updateMessage(aiMessageIndex, '网络连接失败，请检查网络后重试。');
+          this.setData({ isTyping: false });
         }
       });
 
       // 监听分块数据
-      requestTask.onHeadersReceived((res) => {
-        console.log('收到响应头:', res.header);
+      let fullText = '';
+      requestTask.onChunkReceived((res) => {
+        const chunk = res.data;
+        console.log('收到数据块:', chunk);
+        
+        // 解析 SSE 格式的数据
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.chunk) {
+                fullText += data.chunk;
+                this.updateMessage(aiMessageIndex, fullText);
+                this.scrollToBottom();
+              }
+              if (data.done) {
+                this.setData({ isTyping: false });
+              }
+              if (data.error) {
+                this.updateMessage(aiMessageIndex, '抱歉，服务暂时不可用，请稍后再试。');
+                this.setData({ isTyping: false });
+              }
+            } catch (e) {
+              console.error('解析数据块失败:', e);
+            }
+          }
+        }
       });
 
     } catch (error) {
       console.error('发送消息失败:', error);
-      this.updateMessage(newMessages.length - 1, '抱歉，我暂时无法回答这个问题，请稍后再试。');
+      this.updateMessage(aiMessageIndex, '抱歉，我暂时无法回答这个问题，请稍后再试。');
+      this.setData({ isTyping: false });
     }
   },
 

@@ -305,6 +305,56 @@ async function customerService(question, context = {}) {
 }
 
 /**
+ * AI 智能客服 - 流式响应
+ * @param {string} question - 用户问题
+ * @param {Object} context - 上下文信息
+ * @param {Function} onChunk - 回调函数，接收每个数据块
+ */
+async function customerServiceStream(question, context = {}, onChunk) {
+  const systemPrompt = `你是"换换校园"平台的AI智能客服助手。平台是一个大学生物换物平台。
+
+平台规则：
+1. 只支持校园内面对面交换，不支持邮寄
+2. 交换前必须实名认证
+3. 禁止交换违禁品、食品、药品等
+4. 交换完成后双方互评
+
+常见问题：
+- 如何发布物品？点击底部"+"号，填写物品信息
+- 如何交换？找到心仪物品，点击"想要"，等待对方同意
+- 如何认证？在"我的"页面点击"学生认证"
+- 交换安全？建议在人多的公共场所进行交换
+
+请用友好、专业的语气回答用户问题。如果问题超出范围，引导用户联系人工客服。`;
+
+  try {
+    const stream = await client.chat.completions.create({
+      model: MODEL,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: question }
+      ],
+      temperature: 0.7,
+      max_tokens: 500,
+      stream: true // 启用流式响应
+    });
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content || '';
+      if (content) {
+        onChunk(content);
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error('AI客服流式响应失败:', error);
+    onChunk('抱歉，我暂时无法回答这个问题，请联系人工客服。');
+    return false;
+  }
+}
+
+/**
  * AI 生成交易话术
  * @param {Object} myItem - 我的物品
  * @param {Object} targetItem - 对方物品
@@ -437,6 +487,7 @@ module.exports = {
   parseItemFromText,
   findBestMatches,
   customerService,
+  customerServiceStream,
   generateExchangeMessage,
   contentReview,
   negotiateAdvice

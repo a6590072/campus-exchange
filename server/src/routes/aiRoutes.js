@@ -128,12 +128,12 @@ router.post('/find-matches', authenticate, async (req, res) => {
 
 /**
  * @route POST /ai/customer-service
- * @desc AI智能客服
+ * @desc AI智能客服（支持流式响应）
  * @access Public
  */
 router.post('/customer-service', async (req, res) => {
   try {
-    const { question, context } = req.body;
+    const { question, context, stream = false } = req.body;
 
     if (!question) {
       return res.status(400).json({
@@ -142,19 +142,44 @@ router.post('/customer-service', async (req, res) => {
       });
     }
 
-    const answer = await aiService.customerService(question, context);
-
-    res.json({
-      success: true,
-      data: answer
-    });
+    // 如果请求流式响应
+    if (stream) {
+      // 设置流式响应头
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      res.setHeader('X-Accel-Buffering', 'no');
+      
+      // 调用流式客服
+      await aiService.customerServiceStream(question, context, (chunk) => {
+        res.write(`data: ${JSON.stringify({ chunk })}
+\n`);
+      });
+      
+      res.write(`data: ${JSON.stringify({ done: true })}
+\n`);
+      res.end();
+    } else {
+      // 非流式响应
+      const answer = await aiService.customerService(question, context);
+      res.json({
+        success: true,
+        data: answer
+      });
+    }
 
   } catch (error) {
     console.error('AI客服接口错误:', error);
-    res.status(500).json({
-      success: false,
-      message: '服务器错误'
-    });
+    if (req.body.stream) {
+      res.write(`data: ${JSON.stringify({ error: '服务器错误' })}
+\n`);
+      res.end();
+    } else {
+      res.status(500).json({
+        success: false,
+        message: '服务器错误'
+      });
+    }
   }
 });
 
